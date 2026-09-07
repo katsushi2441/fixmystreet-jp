@@ -1,50 +1,35 @@
-# Welcome to FixMyStreet Platform
+# fixmystreet-jp
 
-FixMyStreet Platform is an open source project to help people run websites for
-reporting common street problems such as potholes and broken street lights to
-the appropriate authority.
+[FixMyStreet](https://github.com/mysociety/fixmystreet)（英国 mySociety が開発する、道路の穴・不法投棄・街灯の故障などを地図から自治体に通報し、対応状況を公開するオープンソース。AGPL-3.0）を **日本語で使うための非公式リポジトリ** です。
 
-Users locate problems using a combination of address and sticking a pin
-in a map without worrying about the correct authority to report it to.
-FixMyStreet then works out the correct authority using the problem location and
-type and sends a report, by email or using a web service such as Open311.
-Reported problems are visible to everyone so they can see if something has
-already been reported and leave updates. Users can also subscribe to email or
-RSS alerts of problems in their area.
+- `locale/ja_JP.UTF-8/LC_MESSAGES/FixMyStreet.po` — 本家の `FixMyStreet.po`（1,456 文字列）の日本語訳。プレースホルダ（`%s` `%d` `%%`・HTMLタグ・実体参照・URL・改行）は原文と同一であることを機械検証済み
+- `conf/general.yml-jp` — Docker 版の設定例（`LANGUAGES` に `ja,Japanese,ja_JP` を追加・`BASE_URL` をローカル検証用に）
+- `docker-compose.override.yml` — 公式 `docker-compose.yml` にポートと日本語ロケールのマウントを足したもの
+- `scripts/translate_po_gemma.py` — 未訳エントリをローカルLLM（gemma4）で訳し、プレースホルダ不一致を不採用にする翻訳スクリプト
 
-It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
-problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 6.0; see CHANGELOG.md for a version history.
+本家への翻訳提案は mySociety の方針どおり Transifex 経由が正式ルートです。あわせて本リポジトリの `jp` ブランチから Pull Request を出しています。本家に取り込まれた分は本家の翻訳が正となり、本リポジトリは差分の保守にとどめます。
 
-## Installation
+**本リポジトリは mySociety および FixMyStreet プロジェクトとは無関係の非公式なものです。**
 
-We've been working hard to make the FixMyStreet Platform easy to install and
-re-use in other countries - please see our site at <https://fixmystreet.org/>
-for help and documentation in installing the FixMyStreet Platform.
+## 使い方（Docker・公式 stable イメージ）
 
-For development, if you have Vagrant installed, you can clone the repo and run
-'vagrant up'. We use [Scripts to Rule Them All](https://githubengineering.com/scripts-to-rule-them-all/)
-so `script/update` will update your checkout, `script/server` will run a dev
-server, and `script/test` will run the tests.
+```bash
+git clone https://github.com/katsushi2441/fixmystreet-jp.git
+cd fixmystreet-jp
+# conf/general.yml-jp の BASE_URL・メール設定を自分の値にしてから
+docker compose up -d
+# 初回だけ: コンテナ内で日本語ロケールを生成し .mo を作る
+docker compose exec fixmystreet bash -lc 'echo "ja_JP.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen ja_JP.UTF-8 && cd /var/www/fixmystreet/fixmystreet && commonlib/bin/gettext-makemo && systemctl restart fixmystreet'
+```
 
-## Contribution Guidelines
+`http://<ホスト>:18382/` で日本語の FixMyStreet が開きます（ポートは `docker-compose.override.yml` で変更できます）。
 
-Whilst many contributions come as part of people setting up their own
-installation for their area, we of course welcome stand-alone contributions as
-well. The [*Suitable for
-Volunteers*](https://github.com/mysociety/fixmystreet/labels/Suitable%20for%20Volunteers)
-label in our GitHub issues hopefully labels some potential tasks that might be
-suitable for that situation, though please do search through the other issues
-to see if what you're after has been suggested or discussed - or feel free to
-add your own issue if not.
+地図と地域の判定（MapIt）や自治体への通知先（bodies/contacts）は本家ドキュメントどおり管理画面から設定します。日本の自治体名・区域は MapIt の代わりに OpenStreetMap の行政境界を使う方法を解説記事に書いています。
 
-## Acknowledgements
+## 解説記事
 
-Thanks to [Browserstack](https://www.browserstack.com/) who let us use their
-web-based cross-browser testing tools for this project.
+- 導入と日本語化の実録: https://katsushi2441.github.io/vwork/articles/2026-09-07-fixmystreet-japanese-guide.html
 
-## Examples
+## ライセンス
 
-* <https://www.fixmystreet.com/>
-* <https://www.fixamingata.se/>
-* <https://www.zueriwieneu.ch/>
+翻訳・スクリプトは FixMyStreet 本体と同じ AGPL-3.0 で提供します。翻訳の著作権は株式会社エクスブリッジ（小嶋 篤）に帰属し、本家プロジェクトへの取り込みを妨げません。

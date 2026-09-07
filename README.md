@@ -28,6 +28,10 @@ docker compose exec fixmystreet bash -lc 'echo "ja_JP.UTF-8 UTF-8" >> /etc/local
 
 ![名古屋市の地図で日本語の通報フォーム](docs/screenshots/report-new-nagoya.png)
 
+## 導入キット
+
+手順書・落とし穴・設定・SQL・AI指示書を1つにした導入キット（5,500円税込）: https://kappstore.exbridge.jp/app.php?id=b34e36cfaad27a14
+
 ## 解説記事
 
 - 導入と日本語化の実録: https://katsushi2441.github.io/vwork/articles/2026-09-07-fixmystreet-japanese-guide.html
